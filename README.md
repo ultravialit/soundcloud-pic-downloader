@@ -1,2 +1,7 @@
-# soundcloud-pic-downloader
-downloads a cover from soundcloud
+# pic-downloader
+
+
+# Supported
+
+  - soundcloud
+  - weheartit
