@@ -1,7 +1,6 @@
-﻿using System;
+using System;
 using System.Net;
 using System.Text.RegularExpressions;
-using System.Threading;
 
 namespace soundcloud_pic_downloader
 {
@@ -9,33 +8,51 @@ namespace soundcloud_pic_downloader
     {
         static void Main(string[] args)
         {
+            Console.WindowHeight = 20;
+            Console.WindowWidth = 75;
+            int number = 0;
+            string filename;
             while (true)
             {
-                Console.Write("enter soundcloud link to the music: ");
+                Console.Write("enter soundcloud/weheartit link: ");
                 string adress = Console.ReadLine();
-                string filename;
-                WebClient web = new WebClient();
-                string scr = web.DownloadString(adress);
-
-                var match = Regex.Match(scr, "\"twitter\\:image\"\\s+content=\"([^\"]+)"); // thanks  earskilla
-                if (!match.Success)
+                if (adress != "")
                 {
-                    Console.WriteLine("!match.Success");
+                    using (WebClient web = new WebClient())
+                    {
+                        try
+                        {
+                            string scr = web.DownloadString(adress);
+                            var match = Regex.Match(scr, "\"twitter\\:image\"\\s+content=\"([^\"]+)");
+                            if (!match.Success)
+                            {
+                                Console.WriteLine("Failed to get data link");
+                            }
+                            else
+                            {
+                                number++;
+                                string output = match.Groups[1].Value;
+                                string datatime = DateTime.Now.ToString("yyyy-MM-dd");
+                                filename = "[" + number + "] " + datatime + ".jpg";
+                                web.DownloadFile(output, filename);
+                                Console.Clear();
+                                Console.WriteLine("pic saved with name " + filename);
+                            }
+                        }
+                        catch (WebException)
+                        {
+                            Console.WriteLine("ohh sorry, we can't download your link, maybe some invalid link provided?");
+                        }
+
+                    };
+
                 }
                 else
                 {
-                    string output = match.Groups[1].Value;
-                    string datatime = DateTime.Now.ToString("yyyy-MM-dd");
-                    filename = datatime + ".jpg";
-                    web.DownloadFile(output, filename);
-                    Console.Clear();
-                    Console.WriteLine("pic saved " + output + " with name " + filename);
+                    Console.WriteLine("Your link is empty, try again");
                 }
 
-
             }
-
-
 
         }
     }
